@@ -15,18 +15,18 @@
  */
 package com.github.pwittchen.reactivesensors.library;
 
-import rx.functions.Func1;
+import io.reactivex.functions.Predicate;
 
 public final class ReactiveSensorFilter {
   /**
    * Predicate, which can be used in filter(...) method from RxJava
    * to filter all events in which sensor value has changed
    *
-   * @return Func1<ReactiveSensorEvent, Boolean> predicate indicating if sensor value has changed
+   * @return Predicate<ReactiveSensorEvent> indicating if sensor value has changed
    */
-  public static Func1<ReactiveSensorEvent, Boolean> filterSensorChanged() {
-    return new Func1<ReactiveSensorEvent, Boolean>() {
-      @Override public Boolean call(ReactiveSensorEvent reactiveSensorEvent) {
+  public static Predicate<ReactiveSensorEvent> filterSensorChanged() {
+    return new Predicate<ReactiveSensorEvent>() {
+      @Override public boolean test(ReactiveSensorEvent reactiveSensorEvent) {
         return reactiveSensorEvent.isSensorChanged();
       }
     };
@@ -36,11 +36,11 @@ public final class ReactiveSensorFilter {
    * Predicate, which can be used in filter(...) method from RxJava
    * to filter all events in which accuracy value has changed
    *
-   * @return Func1<ReactiveSensorEvent, Boolean> predicate indicating if accuracy value has changed
+   * @return Predicate<ReactiveSensorEvent> indicating if accuracy value has changed
    */
-  public static Func1<ReactiveSensorEvent, Boolean> filterAccuracyChanged() {
-    return new Func1<ReactiveSensorEvent, Boolean>() {
-      @Override public Boolean call(ReactiveSensorEvent reactiveSensorEvent) {
+  public static Predicate<ReactiveSensorEvent> filterAccuracyChanged() {
+    return new Predicate<ReactiveSensorEvent>() {
+      @Override public boolean test(ReactiveSensorEvent reactiveSensorEvent) {
         return reactiveSensorEvent.isAccuracyChanged();
       }
     };

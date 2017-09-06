@@ -21,16 +21,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
-import android.os.Looper;
+
 import java.util.List;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
 
 /**
  * ReactiveSensors is an Android library
@@ -120,8 +117,8 @@ public final class ReactiveSensors {
 
     final Sensor sensor = sensorManager.getDefaultSensor(sensorType);
 
-    return Observable.create(new Observable.OnSubscribe<ReactiveSensorEvent>() {
-      @Override public void call(final Subscriber<? super ReactiveSensorEvent> subscriber) {
+    return Observable.create(new ObservableOnSubscribe<ReactiveSensorEvent>() {
+      @Override public void subscribe(final ObservableEmitter<ReactiveSensorEvent> subscriber) {
 
         final SensorEventListener listener = new SensorEventListener() {
           @Override public void onSensorChanged(SensorEvent sensorEvent) {
@@ -141,29 +138,11 @@ public final class ReactiveSensors {
           sensorManager.registerListener(listener, sensor, samplingPeriodInUs, handler);
         }
 
-        subscriber.add(unsubscribeInUiThread(new Action0() {
-          @Override public void call() {
+        subscriber.setCancellable(new Cancellable() {
+          @Override public void cancel() {
             sensorManager.unregisterListener(listener);
           }
-        }));
-      }
-    });
-  }
-
-  private Subscription unsubscribeInUiThread(final Action0 unsubscribe) {
-    return Subscriptions.create(new Action0() {
-      @Override public void call() {
-        if (Looper.getMainLooper() == Looper.myLooper()) {
-          unsubscribe.call();
-        } else {
-          final Scheduler.Worker inner = AndroidSchedulers.mainThread().createWorker();
-          inner.schedule(new Action0() {
-            @Override public void call() {
-              unsubscribe.call();
-              inner.unsubscribe();
-            }
-          });
-        }
+        });
       }
     });
   }
