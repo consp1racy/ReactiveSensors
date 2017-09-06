@@ -15,6 +15,8 @@
  */
 package com.github.pwittchen.reactivesensors.library;
 
+import android.support.annotation.NonNull;
+
 import io.reactivex.functions.Predicate;
 
 public final class ReactiveSensorFilter {
@@ -24,6 +26,7 @@ public final class ReactiveSensorFilter {
    *
    * @return Predicate<ReactiveSensorEvent> indicating if sensor value has changed
    */
+  @NonNull
   public static Predicate<ReactiveSensorEvent> filterSensorChanged() {
     return new Predicate<ReactiveSensorEvent>() {
       @Override public boolean test(ReactiveSensorEvent reactiveSensorEvent) {
@@ -38,6 +41,7 @@ public final class ReactiveSensorFilter {
    *
    * @return Predicate<ReactiveSensorEvent> indicating if accuracy value has changed
    */
+  @NonNull
   public static Predicate<ReactiveSensorEvent> filterAccuracyChanged() {
     return new Predicate<ReactiveSensorEvent>() {
       @Override public boolean test(ReactiveSensorEvent reactiveSensorEvent) {

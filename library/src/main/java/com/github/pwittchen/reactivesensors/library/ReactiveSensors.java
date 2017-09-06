@@ -21,8 +21,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -35,18 +38,16 @@ import io.reactivex.functions.Cancellable;
  */
 public final class ReactiveSensors {
 
-  private SensorManager sensorManager;
-
-  private ReactiveSensors() {
-  }
+  private final SensorManager sensorManager;
 
   /**
    * Creates ReactiveSensors object
    *
    * @param context context
    */
-  public ReactiveSensors(Context context) {
-    this.sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+  public ReactiveSensors(final Context context) {
+    this.sensorManager = (SensorManager) context.getApplicationContext()
+        .getSystemService(Context.SENSOR_SERVICE);
   }
 
   /**
@@ -54,6 +55,7 @@ public final class ReactiveSensors {
    *
    * @return list of sensors
    */
+  @NonNull
   public List<Sensor> getSensors() {
     return sensorManager.getSensorList(Sensor.TYPE_ALL);
   }
@@ -64,7 +66,7 @@ public final class ReactiveSensors {
    * @param sensorType from Sensor class available in Android SDK
    * @return boolean returns true if sensor is available
    */
-  public boolean hasSensor(int sensorType) {
+  public boolean hasSensor(final int sensorType) {
     return sensorManager.getDefaultSensor(sensorType) != null;
   }
 
@@ -76,7 +78,8 @@ public final class ReactiveSensors {
    * @param sensorType sensor type from Sensor class from Android SDK
    * @return RxJava Observable with ReactiveSensorEvent
    */
-  public Observable<ReactiveSensorEvent> observeSensor(int sensorType) {
+  @NonNull
+  public Observable<ReactiveSensorEvent> observeSensor(final int sensorType) {
     return observeSensor(sensorType, SensorManager.SENSOR_DELAY_NORMAL, null);
   }
 
@@ -89,7 +92,8 @@ public final class ReactiveSensors {
    * you can use predefined values from SensorManager class with prefix SENSOR_DELAY
    * @return RxJava Observable with ReactiveSensorEvent
    */
-  public Observable<ReactiveSensorEvent> observeSensor(int sensorType,
+  @NonNull
+  public Observable<ReactiveSensorEvent> observeSensor(final int sensorType,
                                                        final int samplingPeriodInUs) {
     return observeSensor(sensorType, samplingPeriodInUs, null);
   }
@@ -105,13 +109,13 @@ public final class ReactiveSensors {
    * you can use predefined values from SensorManager class with prefix SENSOR_DELAY
    * @return RxJava Observable with ReactiveSensorEvent
    */
-  public Observable<ReactiveSensorEvent> observeSensor(int sensorType,
+  @NonNull
+  public Observable<ReactiveSensorEvent> observeSensor(final int sensorType,
                                                        final int samplingPeriodInUs,
-                                                       final Handler handler) {
-
+                                                       @Nullable final Handler handler) {
     if (!hasSensor(sensorType)) {
       String format = "Sensor with id = %d is not available on this device";
-      String message = String.format(format, sensorType);
+      String message = String.format(Locale.US, format, sensorType);
       return Observable.error(new SensorNotFoundException(message));
     }
 
